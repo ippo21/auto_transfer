@@ -1,6 +1,5 @@
 import os
 import shutil
-import re
 import dirconfig as cfg
 from pathlib import Path
 from datetime import datetime
@@ -20,27 +19,25 @@ f = open("transfer.log", "a+")
 
 # This will walk the from main directory, then walk sub directories
 for dirpath, dirnames, files in os.walk(from_dir):
-    print(f'Found: {dirpath}')
 
     # This will walk the files for
     for filename in files:
         # Read the destination from the files name
         # Agreement-civic-other_info.txt  --> Move to Agreement(dir level 1),Civic(dir level 2) directory
 
-        # regex strng before the last "-"
-        transfor_to = re.search("(?s:.*)-", filename).group(0)
+        # get string from first index to last instance of '-' (rfind gets last instance)
+        transfer_to = filename[0:filename.rfind("-")+1]
+
         # convert "-" to "\"
-        transfor_to = transfor_to.replace("-", "\\")
+        transfer_to = transfer_to.replace("-", "/")
 
         # Move file from source to destination
         # TO DO: this cannot handle subdirectories
         from_file = dirpath+filename
-        to_file = to_dir+transfor_to[0]+"\\"+transfor_to+timestamp+filename
-        print(from_file)
-        print(to_file)
+        to_file = to_dir+transfer_to[0]+"/"+transfer_to+timestamp+filename
 
         try:
-            os.makedirs(to_dir+transfor_to[0]+"\\"+transfor_to)
+            os.makedirs(to_dir+transfer_to[0]+"/"+transfer_to)
         except OSError:
             print("Diretory already exists")
         else:
